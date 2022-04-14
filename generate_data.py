@@ -12,7 +12,8 @@ def generateTrainingData(path, angRes: int, factor: int, label_size: int = None,
     label_size_h = label_size_w = label_size
     downRatio = 1 / factor
     sourceDatasets = os.listdir(path)
-    sourceDatasets.remove('.DS_Store')
+    if '.DS_Store' in sourceDatasets:
+        sourceDatasets.remove('.DS_Store')
     # print(sourceDatasets)
     datasetsNum = len(sourceDatasets)
     idx = 0
@@ -29,7 +30,8 @@ def generateTrainingData(path, angRes: int, factor: int, label_size: int = None,
     for DatasetIndex in range(datasetsNum):
         sourceDataFolder = path + '/' + sourceDatasets[DatasetIndex] + '/training/'
         folders = os.listdir(sourceDataFolder)
-        folders.remove('.DS_Store')
+        if '.DS_Store' in folders:
+            folders.remove('.DS_Store')
         # print(folders)
         sceneNum = len(folders)
         # print(sceneNum)
@@ -87,7 +89,7 @@ def generateTrainingData(path, angRes: int, factor: int, label_size: int = None,
                             tempHRY = tempHRY[:, :, 0]
                             label[u, v, :, :] = tempHRY
                             tempLRy = cv2.resize(tempHRY,
-                                                 (int(label_size_h * downRatio), int(label_size_w * downRatio)),
+                                                 (int(label_size_w * downRatio), int(label_size_h * downRatio)),
                                                  interpolation=cv2.INTER_LINEAR)
                             data[u, v, :, :] = tempLRy
                     if not is_test:
@@ -95,7 +97,7 @@ def generateTrainingData(path, angRes: int, factor: int, label_size: int = None,
                     else:
                         SavePath_H5 = SavePath + sceneName[: -4] + '.h5'
                     label = np.transpose(label)
-                    data = np.transpose(data)
+                    data = np.transpose(data).astype(np.float32)
                     f = h5py.File(SavePath_H5, 'w')
                     f.create_dataset('/data', data=data)
                     f.create_dataset('/label', data=label)
@@ -108,4 +110,4 @@ def generateTrainingData(path, angRes: int, factor: int, label_size: int = None,
 
 
 if __name__ == '__main__':
-    generateTrainingData('./Datasets', 5, 4, 320)
+    generateTrainingData(path='./data_mat', angRes=5, factor=4, label_size=320)

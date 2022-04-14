@@ -58,6 +58,8 @@ if __name__ == '__main__':
                                  lr=train_args.lr)
     scheduler = torch.optim.lr_scheduler.StepLR(optimizer, step_size=train_args.n_steps, gamma=train_args.gamma)
 
+    print('\n', '***\t' + net_proxy.model_filename[:-8] + '\t' + '***', '\n')
+
     for idx_epoch in range(train_args.n_epochs):
         for idx_iter, (data, label) in enumerate(train_loader, 0):
             data, label = Variable(data).to(train_args.device), Variable(label).to(train_args.device)
@@ -69,7 +71,7 @@ if __name__ == '__main__':
 
         scheduler.step()
         loss_ave, time_ave = test(net_proxy.net)
-        print(idx_epoch, loss_ave, best)
+        print(idx_epoch,'\t', loss_ave,'\t', best)
         if loss_ave < best:
             best = loss_ave
             net_proxy.save(best=best)
